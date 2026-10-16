@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fieldnotes | LIS Resource Pathfinder</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        },
+                        teal: {
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                        },
+                        slate: {
+                            850: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['DM Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        .hero-pattern {
+            background-color: #312e81;
+            background-image: radial-gradient(#4f46e5 1px, transparent 1px), radial-gradient(#0d9488 1px, #312e81 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+            border-radius: 9999px;
+        }
+
+        :root {
+            color-scheme: light;
+            --paper: #f6f5ef;
+            --surface: #fffefa;
+            --ink: #1c2834;
+            --muted: #64717b;
+            --line: #dfe3dd;
+            --blue: #3157d5;
+            --blue-dark: #203eaa;
+            --lime: #d9f36a;
+            --coral: #ef765b;
+            --mono: 'DM Mono', monospace;
+            --sans: 'Space Grotesk', sans-serif;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-padding-top: 150px; }
+        body {
+            background: var(--paper) !important;
+            color: var(--ink) !important;
+            font-family: var(--sans) !important;
+            background-image: radial-gradient(#cbd0c7 0.7px, transparent 0.7px) !important;
+            background-size: 19px 19px !important;
+        }
+        html.dark {
+            color-scheme: dark;
+            --paper: #111a22;
+            --surface: #17232d;
+            --ink: #edf1e9;
+            --muted: #aab7bb;
+            --line: #33434d;
+            --blue: #94aaff;
+            --blue-dark: #b4c2ff;
+            --lime: #d9f36a;
+            background-color: var(--paper) !important;
+            background-image: radial-gradient(#293740 0.7px, transparent 0.7px) !important;
+        }
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: color-mix(in srgb, var(--paper) 92%, transparent) !important;
+            border-color: var(--line) !important;
+            box-shadow: 0 1px 0 var(--line) !important;
+            backdrop-filter: blur(16px);
+        }
+        .site-header > div { max-width: 1180px; }
+        .brand-mark {
+            width: 42px !important;
+            height: 42px !important;
+            border-radius: 13px !important;
+            background: var(--blue) !important;
+            box-shadow: 4px 4px 0 var(--lime) !important;
+        }
+        .brand-name { color: var(--ink) !important; letter-spacing: -.06em !important; }
+        .brand-caption { color: var(--muted) !important; }
+        #themeToggle {
+            border-color: var(--line) !important;
+            color: var(--ink) !important;
+            border-radius: 12px !important;
+        }
+        .saved-trigger {
+            background: var(--ink) !important;
+            color: var(--paper) !important;
+            box-shadow: none !important;
+            border-radius: 12px !important;
+        }
+        .saved-trigger:hover { background: var(--blue) !important; color: white !important; }
+        #savedCountBadge { background: var(--lime) !important; color: var(--ink) !important; }
+        .hero-pattern {
+            color: #f9f8f1 !important;
+            background: #253fba !important;
+            background-image:
+                radial-gradient(ellipse at 78% 16%, rgba(217,243,106,.22), transparent 27%),
+                linear-gradient(120deg, transparent 0 67%, rgba(22,43,131,.38) 67% 100%) !important;
+        }
+        .hero-pattern::after {
+            content: "LIS / 026";
+            position: absolute;
+            right: max(calc((100vw - 1180px) / 2), 24px);
+            bottom: 22px;
+            color: rgba(255,255,255,.35);
+            font: 11px var(--mono);
+            letter-spacing: .12em;
+        }
+        .hero-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+            align-items: center;
+            gap: clamp(32px, 7vw, 96px);
+        }
+        .hero-copy { max-width: 710px; }
+        .hero-kicker {
+            color: var(--lime) !important;
+            background: transparent !important;
+            border: 0 !important;
+            padding: 0 !important;
+            font: 11px var(--mono) !important;
+            letter-spacing: .1em !important;
+        }
+        .hero-title {
+            margin-top: 22px;
+            max-width: 760px;
+            font-size: clamp(42px, 6.2vw, 76px) !important;
+            line-height: .99 !important;
+            letter-spacing: -.075em !important;
+            font-weight: 600 !important;
+        }
+        .hero-description {
+            max-width: 610px;
+            margin-top: 22px;
+            color: #dce3ff !important;
+            font-size: 15px !important;
+            line-height: 1.8 !important;
+            font-weight: 400 !important;
+        }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+        .hero-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 17px;
+            border: 1px solid rgba(255,255,255,.26);
+            border-radius: 12px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            transition: transform .2s, background .2s;
+        }
+        .hero-action:hover { transform: translateY(-2px); background: rgba(255,255,255,.1); }
+        .hero-action-primary { background: var(--lime); color: #1c2834; border-color: var(--lime); }
+        .hero-action-primary:hover { background: #e4ff83; }
+        .hero-index {
+            padding: 23px;
+            color: var(--ink);
+            background: #fbfaf3;
+            border: 1px solid rgba(255,255,255,.6);
+            border-radius: 18px;
+            box-shadow: 12px 12px 0 rgba(18,34,107,.35);
+            transform: rotate(1.3deg);
+        }
+        .hero-index-head, .hero-index-foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #73808a;
+            font: 10px var(--mono);
+            letter-spacing: .06em;
+        }
+        .hero-index-head { padding-bottom: 16px; border-bottom: 1px dashed #cdd3ce; }
+        .hero-index-label {
+            display: block;
+            margin: 18px 0 12px;
+            color: #7b858a;
+            font: 10px var(--mono);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .hero-index-list { display: grid; gap: 2px; }
+        .hero-index-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 8px;
+            border-bottom: 1px solid #e8e9e1;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .hero-index-item span { color: #3157d5; font: 10px var(--mono); }
+        .hero-index-foot { margin-top: 16px; }
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-top: 50px;
+            border-top: 1px solid rgba(255,255,255,.2);
+        }
+        .hero-stat {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 18px 18px 0 0;
+        }
+        .hero-stat + .hero-stat { padding-left: 20px; border-left: 1px solid rgba(255,255,255,.2); }
+        .hero-stat-icon { color: var(--lime); font-size: 18px; }
+        .hero-stat strong { display: block; font-size: 13px; }
+        .hero-stat span:last-child { color: #cbd5ff; font-size: 11px; }
+        .filters-bar {
+            top: 64px !important;
+            background: color-mix(in srgb, var(--paper) 94%, transparent) !important;
+            border-color: var(--line) !important;
+            box-shadow: 0 8px 20px rgba(28,40,52,.05) !important;
+            backdrop-filter: blur(14px);
+        }
+        .filters-inner { max-width: 1180px; }
+        #searchInput, #typeFilter {
+            border-color: var(--line) !important;
+            background: var(--surface) !important;
+            color: var(--ink) !important;
+            border-radius: 10px !important;
+            min-height: 42px;
+        }
+        #searchInput:focus, #typeFilter:focus { --tw-ring-color: var(--blue) !important; }
+        .filter-label { color: var(--muted) !important; }
+        .reset-button {
+            border: 1px solid var(--line);
+            background: var(--surface) !important;
+            color: var(--muted) !important;
+            border-radius: 10px !important;
+        }
+        .reset-button:hover { color: var(--ink) !important; border-color: var(--blue); }
+        .subject-tabs { gap: 7px !important; }
+        .subject-tab {
+            padding: 8px 12px !important;
+            border-radius: 999px !important;
+            font-size: 11px !important;
+        }
+        .subject-tab:not(.subject-tab-active) {
+            background: transparent !important;
+            color: var(--muted) !important;
+            border-color: transparent !important;
+        }
+        .subject-tab:not(.subject-tab-active):hover { color: var(--blue) !important; background: var(--surface) !important; }
+        .subject-tab-active { background: var(--ink) !important; color: var(--paper) !important; box-shadow: none !important; }
+        .content-wrap { max-width: 1180px; padding-top: 36px !important; gap: 38px !important; }
+        #subjectOverviewBox {
+            padding: 24px 28px !important;
+            background: var(--surface) !important;
+            border: 1px solid var(--line) !important;
+            border-left: 4px solid var(--coral) !important;
+            border-radius: 6px 16px 16px 6px !important;
+            box-shadow: 0 5px 16px rgba(28,40,52,.035) !important;
+        }
+        .overview-kicker {
+            color: var(--blue) !important;
+            font: 10px var(--mono) !important;
+            letter-spacing: .1em !important;
+        }
+        .overview-title { color: var(--ink) !important; font-size: 24px !important; letter-spacing: -.05em; }
+        .overview-description { color: var(--muted) !important; line-height: 1.75 !important; }
+        .key-term {
+            background: transparent !important;
+            color: var(--blue-dark) !important;
+            border-color: #d9e0fc !important;
+            border-radius: 999px !important;
+        }
+        html.dark .key-term { border-color: #455373 !important; }
+        .resources-heading {
+            align-items: end !important;
+            border-color: var(--line) !important;
+        }
+        .resources-heading h2 { color: var(--ink); font-size: 22px; letter-spacing: -.05em; }
+        .resources-heading p { color: var(--muted) !important; font: 11px var(--mono); }
+        #resourcesGrid { gap: 16px !important; }
+        .resource-card {
+            position: relative;
+            padding: 22px !important;
+            gap: 20px !important;
+            background: var(--surface) !important;
+            border: 1px solid var(--line) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 3px 9px rgba(28,40,52,.025) !important;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease !important;
+        }
+        .resource-card:hover {
+            transform: translateY(-3px);
+            border-color: #aab8ed !important;
+            box-shadow: 0 12px 25px rgba(28,40,52,.08) !important;
+        }
+        .resource-card h3 { color: var(--ink) !important; font-size: 18px !important; letter-spacing: -.045em; }
+        .resource-card h3 a:hover { color: var(--blue) !important; }
+        .resource-card .resource-author { color: var(--blue-dark) !important; font: 11px var(--mono); }
+        .resource-card .resource-annotation {
+            background: #f6f6f0 !important;
+            color: #53616c !important;
+            border: 0 !important;
+            border-left: 2px solid #d9e2a0 !important;
+            border-radius: 0 8px 8px 0 !important;
+        }
+        html.dark .resource-card .resource-annotation { background: #202e36 !important; color: #c4ced0 !important; }
+        .resource-card .resource-annotation span { color: var(--ink) !important; }
+        .resource-card .resource-footer { border-color: var(--line) !important; }
+        .resource-card .citation-button, .resource-card .save-button {
+            padding: 8px 11px !important;
+            border-radius: 9px !important;
+            font-size: 11px !important;
+        }
+        .resource-card .citation-button {
+            background: transparent !important;
+            color: var(--muted) !important;
+            border: 1px solid var(--line);
+        }
+        .resource-card .citation-button:hover { color: var(--blue) !important; border-color: var(--blue); }
+        .resource-card .save-button { background: var(--blue) !important; color: white !important; }
+        .resource-card .save-button.is-saved { background: var(--lime) !important; color: var(--ink) !important; }
+        .members-section {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 12px 24px 64px;
+        }
+        .members-card {
+            display: grid;
+            grid-template-columns: 96px minmax(0, 1fr);
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            cursor: pointer;
+            text-align: left;
+            transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+        }
+        .members-card:hover, .members-card:focus-visible {
+            border-color: var(--blue);
+            box-shadow: 0 8px 22px rgba(28,40,52,.1);
+            transform: translateY(-2px);
+        }
+        .members-card:focus-visible {
+            outline: 3px solid var(--blue);
+            outline-offset: 3px;
+        }
+        .members-photo {
+            width: 96px;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 10px;
+            background: var(--paper);
+        }
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+            gap: 16px;
+        }
+        .members-kicker {
+            color: var(--blue);
+            font: 10px var(--mono);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+        .members-note { color: var(--muted); font-size: 12px; line-height: 1.6; }
+        #savedDrawer { background: var(--surface) !important; border-color: var(--line) !important; }
+        .drawer-head { background: var(--ink) !important; }
+        .drawer-footer { background: var(--paper) !important; border-color: var(--line) !important; }
+        .drawer-action { border-radius: 10px !important; }
+        #citationModal > div { border-radius: 16px !important; }
+        #memberModal > div { border-radius: 16px !important; }
+        .member-modal-photo {
+            width: min(100%, 360px);
+            max-height: min(62vh, 480px);
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 12px;
+            background: var(--paper);
+        }
+        #apaCitationText, #annotationSnippetText {
+            background: var(--paper) !important;
+            border-color: var(--line) !important;
+            border-radius: 10px !important;
+        }
+        #toast { border-radius: 10px !important; }
+        @media (max-width: 760px) {
+            .hero-layout { grid-template-columns: 1fr; }
+            .hero-index { display: none; }
+            .hero-stats { grid-template-columns: 1fr; margin-top: 34px; }
+            .hero-stat, .hero-stat + .hero-stat { padding: 13px 0; border-left: 0; }
+            .hero-stat + .hero-stat { border-top: 1px solid rgba(255,255,255,.2); }
+            .hero-pattern::after { display: none; }
+            .filters-bar { top: 64px !important; }
+            .content-wrap { padding-top: 24px !important; }
+        }
+        @media (max-width: 480px) {
+            .brand-name { font-size: 14px !important; }
+            .brand-caption { display: none !important; }
+            .members-section { padding: 8px 16px 48px; }
+            .members-card { gap: 12px; padding: 12px; }
+            .members-photo { width: 80px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+        }
+    </style>
+</head>
+<body id="top" class="font-sans bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200 custom-scrollbar">
+
+    <!-- Sticky Navigation -->
+    <header class="site-header sticky top-0 z-40 glass shadow-sm transition-all border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="#top" aria-label="Fieldnotes home" class="flex items-center space-x-3 group">
+                    <div class="brand-mark w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-600/30 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-compass text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="brand-name text-lg font-extrabold tracking-tight">FIELDNOTES / LIS</span>
+                        <span class="brand-caption block text-[10px] font-bold uppercase tracking-widest">Student-built resource guide</span>
+                    </div>
+                </a>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-3">
+                    <a href="#groupMembers" class="text-xs font-bold text-slate-600 hover:text-brand-600 dark:text-slate-300 dark:hover:text-white">Group Members</a>
+                    <button id="themeToggle" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-200" title="Toggle Theme">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
+                    </button>
+                    <button onclick="toggleSavedDrawer()" class="saved-trigger relative px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-bookmark"></i>
+                        <span class="hidden sm:inline">Saved Resources</span>
+                        <span id="savedCountBadge" class="bg-teal-500 text-white text-[10px] px-2 py-0.5 rounded-full font-mono">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="hero-pattern text-white py-12 lg:py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto">
+                <div class="hero-layout">
+                    <div class="hero-copy">
+                        <span class="hero-kicker inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider">
+                            <i class="fa-solid fa-graduation-cap"></i> A student-built guide to better information
+                        </span>
+                        <h1 class="hero-title text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                            Find your way through <span style="color:#d9f36a">library science.</span>
+                        </h1>
+                        <p class="hero-description text-slate-200 text-sm sm:text-base leading-relaxed font-light">
+                            A practical starting point for curious LIS students. Browse trusted books, standards, journals, tools, and ideas—organized by the topics we study.
+                        </p>
+                        <div class="hero-actions">
+                            <a class="hero-action hero-action-primary" href="#resources"><i class="fa-solid fa-arrow-down"></i> Explore the collection</a>
+                            <a class="hero-action" href="#resourceSearch"><i class="fa-solid fa-magnifying-glass"></i> Search resources</a>
+                        </div>
+                    </div>
+                    <aside class="hero-index" aria-label="Six areas covered in the guide">
+                        <div class="hero-index-head"><span>FIELDNOTES / LIS</span><span>INDEX 01—06</span></div>
+                        <span class="hero-index-label">Inside this guide</span>
+                        <div class="hero-index-list">
+                            <div class="hero-index-item"><span>01</span> Cataloging &amp; classification</div>
+                            <div class="hero-index-item"><span>02</span> Reference services</div>
+                            <div class="hero-index-item"><span>03</span> Library management</div>
+                            <div class="hero-index-item"><span>04</span> Collection development</div>
+                            <div class="hero-index-item"><span>05</span> Library technology</div>
+                            <div class="hero-index-item"><span>06</span> Abstracting &amp; indexing</div>
+                        </div>
+                        <div class="hero-index-foot"><span>MADE FOR LEARNING</span><span>✳</span></div>
+                    </aside>
+                </div>
+
+                <!-- Pathfinder Quick Stats & Guide -->
+                <div class="hero-stats text-xs">
+                    <div class="hero-stat">
+                        <div class="hero-stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+                        <div>
+                            <strong>6 areas to explore</strong>
+                            <span>Core LIS subjects, all in one place</span>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-icon"><i class="fa-solid fa-book-open"></i></div>
+                        <div>
+                            <strong>60 hand-picked resources</strong>
+                            <span>Books, articles, standards, and tools</span>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-icon"><i class="fa-solid fa-bookmark"></i></div>
+                        <div>
+                            <strong>Build your own reading list</strong>
+                            <span>Save favorites and copy citations</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls & Filter Section -->
+        <section id="resourceSearch" class="filters-bar sticky top-16 z-30 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 py-4 px-4 sm:px-6 lg:px-8 shadow-sm">
+            <div class="filters-inner max-w-7xl mx-auto space-y-4">
+                
+                <!-- Search & Type Filter -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+                    <!-- Search Input -->
+                    <div class="relative w-full md:w-96">
+                        <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input id="searchInput" type="text" aria-label="Search resources" placeholder="Search by title, author, or topic..." onkeyup="handleFilterChange()" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+
+                    <!-- Filter Dropdowns & Counters -->
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-between md:justify-end text-xs">
+                        <div class="flex items-center space-x-2">
+                            <label class="filter-label text-slate-500 dark:text-slate-400 font-semibold" for="typeFilter">Format:</label>
+                            <select id="typeFilter" onchange="handleFilterChange()" class="py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                <option value="ALL">All Formats (60)</option>
+                                <option value="Book">Books</option>
+                                <option value="Article">Articles / Papers</option>
+                                <option value="Website">Websites / Portals</option>
+                                <option value="Database">Open Access Databases</option>
+                                <option value="Video">Video Tutorials</option>
+                                <option value="Standard">Standards & Rules</option>
+                                <option value="Tool">Tools & Repositories</option>
+                            </select>
+                        </div>
+                        <button onclick="resetFilters()" class="reset-button py-2 px-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-xl text-slate-700 dark:text-slate-200 font-medium">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subject Tabs Bar -->
+                <div class="subject-tabs flex items-center space-x-2 overflow-x-auto pb-1 pt-1 custom-scrollbar text-xs">
+                    <button onclick="selectSubject('ALL', this)" class="subject-tab subject-tab-active flex-shrink-0 px-4 py-2 rounded-xl font-bold transition-all bg-brand-600 text-white shadow-sm">
+                        All Subjects (60)
+                    </button>
+                    <button onclick="selectSubject('cataloging', this)" class="subject-tab flex-shrink-0 px-4 py-2 rounded-xl font-medium transition-all bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-brand-500">
+                        1. Cataloging & Classification
+                    </button>
+                    <button onclick="selectSubject('reference', this)" class="subject-tab flex-shrink-0 px-4 py-2 rounded-xl font-medium transition-all bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-brand-500">
+                        2. Reference Services
+                    </button>
+                    <button onclick="selectSubject('management', this)" class="subject-tab flex-shrink-0 px-4 py-2 rounded-xl font-medium transition-all bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-brand-500">
+                        3. Library Management
+                    </button>
+                    <button onclick="selectSubject('collection', this)" class="subject-tab flex-shrink-0 px-4 py-2 rounded-xl font-medium transition-all bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-brand-500">
+                        4. Collection Development
+                    </button>
+                    <button onclick="selectSubject('ict', this)" class="subject-tab flex-shrink-0 px-4 py-2 rounded-xl font-medium transition-all bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-brand-500">
+                        5. ICT in Libraries
+                    </button>
+                    <button onclick="selectSubject('abstracting', this)" class="subject-tab flex-shrink-0 px-4 py-2 rounded-xl font-medium transition-all bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-brand-500">
+                        6. Abstracting & Indexing
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="resources" class="content-wrap max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+            
+            <!-- Subject Overview Banner (Dynamic) -->
+            <div id="subjectOverviewBox" class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm transition-all">
+                <!-- Javascript populates core subject description -->
+            </div>
+
+            <!-- Active Resources Grid Header -->
+            <div class="resources-heading flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                <div>
+                    <h2 id="activeSectionTitle" class="text-xl font-bold tracking-tight">All Resources</h2>
+                    <p id="resourceCountText" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Showing 60 annotated sources</p>
+                </div>
+            </div>
+
+            <!-- Resources Cards Container -->
+            <div id="resourcesGrid" class="grid md:grid-cols-2 gap-6">
+                <!-- Dynamic resource cards populates here -->
+            </div>
+
+        </section>
+
+        <!-- Group Members: replace the sample image path and example details below. -->
+        <section id="groupMembers" class="members-section" aria-labelledby="membersHeading">
+            <div class="mb-6">
+                <p class="members-kicker mb-2">The people behind the pathfinder</p>
+                <h2 id="membersHeading" class="text-2xl font-bold tracking-tight">Group Members</h2>
+               
+
+            <div class="members-grid">
+                <!-- Replace each sample image src with that member's photo path, e.g. images/member-1.jpg. -->
+                <article class="members-card" role="button" tabindex="0" aria-haspopup="dialog" aria-label="View profile for Member 1 Name" onclick="openMemberModal(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMemberModal(this)}">
+                    <img class="members-photo" src="kyla.jpg" alt="Example photo for Member 1; replace with their picture">
+                    <div>
+                        <p class="members-kicker mb-2">Position: Librarian V</p>
+                        <h3 class="text-lg font-bold">Kyla Bonilla</h3>
+                    </div>
+                </article>
+                <article class="members-card" role="button" tabindex="0" aria-haspopup="dialog" aria-label="View profile for Member 2 Name" onclick="openMemberModal(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMemberModal(this)}">
+                    <img class="members-photo" src="shai.jpg" alt="Member 2 photo">
+                    <div>
+                        <p class="members-kicker mb-2">Position: Chief Librarian</p>
+                        <h3 class="text-lg font-bold">Shaira Lyn Reyes</h3>
+                    </div>
+                </article>
+                <article class="members-card" role="button" tabindex="0" aria-haspopup="dialog" aria-label="View profile for Member 3 Name" onclick="openMemberModal(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMemberModal(this)}">
+                    <img class="members-photo" src="princess.jpg" alt="Example photo for Member 3; replace with their picture">
+                    <div>
+                        <p class="members-kicker mb-2">Position: Head Librarian</p>
+                        <h3 class="text-lg font-bold">Princess Hernandez</h3>
+                    </div>
+                </article>
+                <article class="members-card" role="button" tabindex="0" aria-haspopup="dialog" aria-label="View profile for Member 4 Name" onclick="openMemberModal(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMemberModal(this)}">
+                    <img class="members-photo" src="jam.jpg" alt="Example photo for Member 4; replace with their picture">
+                    <div>
+                        <p class="members-kicker mb-2">Position: Librarian III</p>
+                        <h3 class="text-lg font-bold">Jamaica Tamboon</h3>
+                    </div>
+                </article>
+                <article class="members-card" role="button" tabindex="0" aria-haspopup="dialog" aria-label="View profile for Member 5 Name" onclick="openMemberModal(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMemberModal(this)}">
+                    <img class="members-photo" src="nicole.jpg" alt="Example photo for Member 5; replace with their picture">
+                    <div>
+                        <p class="members-kicker mb-2">Position: Librarian II</p>
+                        <h3 class="text-lg font-bold">Nicole Malacas</h3>
+                    </div>
+                </article>
+                <article class="members-card" role="button" tabindex="0" aria-haspopup="dialog" aria-label="View profile for Member 6 Name" onclick="openMemberModal(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMemberModal(this)}">
+                    <img class="members-photo" src="rhey.png" alt="Example photo for Member 6; replace with their picture">
+                    <div>
+                        <p class="members-kicker mb-2">Position: Librarian I</p>
+                        <h3 class="text-lg font-bold">Rheymelyn Rosales</h3>
+                    </div>
+                </article>
+                <article class="members-card" role="button" tabindex="0" aria-haspopup="dialog" aria-label="View profile for Member 7 Name" onclick="openMemberModal(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMemberModal(this)}">
+                    <img class="members-photo" src="kim.jpg" alt="Example photo for Member 7; replace with their picture">
+                    <div>
+                        <p class="members-kicker mb-2">Position: Library Assistant</p>
+                        <h3 class="text-lg font-bold">Kimberly Guico</h3>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- Saved Resources Sidebar Drawer -->
+    <div id="savedDrawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white dark:bg-slate-850 shadow-2xl border-l border-slate-200 dark:border-slate-700 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="drawer-head p-5 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between bg-brand-900 text-white">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-bookmark text-teal-400"></i>
+                <h3 class="font-bold text-base">My Saved Pathfinder</h3>
+            </div>
+            <button onclick="toggleSavedDrawer()" class="text-slate-300 hover:text-white p-1">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <div id="savedListContainer" class="flex-grow overflow-y-auto p-5 space-y-4 text-xs custom-scrollbar">
+            <!-- Saved items rendered here -->
+        </div>
+
+        <div class="drawer-footer p-5 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 space-y-3">
+            <button onclick="copySavedPathfinderText()" class="drawer-action w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-2 shadow-sm">
+                <i class="fa-solid fa-copy"></i>
+                <span>Copy Pathfinder Text</span>
+            </button>
+            <button onclick="clearSavedResources()" class="drawer-action w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-red-500 hover:text-white text-slate-600 dark:text-slate-300 font-semibold rounded-xl text-xs transition-colors">
+                Clear Saved List
+            </button>
+        </div>
+    </div>
+
+    <!-- Enlarged Group Member Profile Modal -->
+    <div id="memberModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this) closeModal('memberModal')">
+        <div role="dialog" aria-modal="true" aria-labelledby="memberModalName" class="bg-white dark:bg-slate-800 max-w-xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl border border-slate-200 dark:border-slate-700 relative">
+            <button id="closeMemberModalButton" type="button" onclick="closeModal('memberModal')" aria-label="Close member profile" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center shadow">
+                <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
+            </button>
+            <div class="flex flex-col items-center text-center gap-5">
+                <img id="memberModalPhoto" class="member-modal-photo" src="" alt="">
+                <div>
+                    <p id="memberModalPosition" class="members-kicker mb-2"></p>
+                    <h2 id="memberModalName" class="text-2xl font-bold tracking-tight"></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Citation & Annotation Copy Modal -->
+    <div id="citationModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-200 dark:border-slate-700 relative">
+            <button onclick="closeModal('citationModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 dark:hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div>
+                <span class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest block">Citation & Annotation Generator</span>
+                <h3 id="modalResourceTitle" class="text-lg font-bold text-slate-900 dark:text-white mt-1">Resource Title</h3>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">APA 7th Edition Citation:</label>
+                    <div id="apaCitationText" class="p-3 bg-slate-100 dark:bg-slate-900 font-mono rounded-xl border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 leading-relaxed select-all">
+                        Citation loading...
+                    </div>
+                </div>
+
+                <div>
+                    <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">Evaluative Annotation:</label>
+                    <div id="annotationSnippetText" class="p-3 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 leading-relaxed select-all">
+                        Annotation loading...
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="copyCitationSnippet()" class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-1.5 shadow-md">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <span>Copy Full Snippet</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 border border-slate-700 transition-all text-xs">
+        <i class="fa-solid fa-circle-check text-teal-400 text-base"></i>
+        <span id="toastMessage">Action completed!</span>
+    </div>
+
+    <script>
+        // Subject Overview Descriptions
+        const subjectOverviews = {
+            ALL: {
+                title: "Complete Digital Pathfinder Collection",
+                desc: "Viewing all 60 curated resources across Cataloging & Classification, Reference & Information Services, Library Management, Collection Development, ICT in Libraries, and Abstracting & Indexing.",
+                keyTerms: ["Metadata", "Information Literacy", "Strategic Planning", "Licensing", "ILMS", "Controlled Vocabularies"]
+            },
+            cataloging: {
+                title: "1. Cataloging & Classification",
+                desc: "Cataloging and classification form the structural backbone of information organization. This domain covers standard standards such as AACR2, RDA (Resource Description and Access), MARC21, Dewey Decimal Classification (DDC), and Library of Congress Classification (LCC) to facilitate effective retrieval.",
+                keyTerms: ["RDA Toolkit", "MARC21 Formats", "DDC 23", "LC Subject Headings", "FRBR Models"]
+            },
+            reference: {
+                title: "2. Reference & Information Services",
+                desc: "Reference services focus on meeting users' information needs through mediation, instruction, and consultation. Major topics include virtual reference software, information literacy instruction models (ACRL Framework), reader's advisory, and research assistance.",
+                keyTerms: ["ACRL Framework", "Virtual Reference", "Reader's Advisory", "Information Literacy", "Reference Interview"]
+            },
+            management: {
+                title: "3. Library Management & Administration",
+                desc: "Encompasses executive leadership, strategic planning, human resource management, fiscal budgeting, legal compliance, physical space design, advocacy, and community outreach necessary to sustain effective library operations.",
+                keyTerms: ["Strategic Planning", "Fiscal Budgeting", "Personnel Management", "Library Advocacy", "Policy Design"]
+            },
+            collection: {
+                title: "4. Collection Development & Management",
+                desc: "Collection management governs the systematically planned acquisition, licensing, evaluation, weeding, and preservation of print, electronic, and multimedia learning materials aligned with institutional user demands.",
+                keyTerms: ["Selection Policies", "Digital Licensing", "Deselection / Weeding", "Vendor Relations", "Consortial Purchasing"]
+            },
+            ict: {
+                title: "5. Information & Communications Technology (ICT) in Libraries",
+                desc: "Examines technological infrastructure transforming modern libraries, including Integrated Library Management Systems (ILMS), digital repositories, discovery layers, cloud computing, open-source platforms, and emerging AI tools.",
+                keyTerms: ["Koha ILS", "DSpace Repositories", "AI in Metadata", "RFID Tracking", "Discovery Systems"]
+            },
+            abstracting: {
+                title: "6. Abstracting & Indexing",
+                desc: "Focuses on content representation and information extraction techniques. Key subjects include controlled vocabulary construction, thesauri design (ISO 25964), metadata schemes (Dublin Core), and writing informative/indicative abstracts.",
+                keyTerms: ["Dublin Core", "Thesaurus Construction", "Controlled Vocabularies", "Informative Abstracts", "ANSI/NISO Standards"]
+            }
+        };
+
+        // 60 Comprehensive Curated Resources Data (10 per subject)
+        const lisResources = [
+            // Subject 1: Cataloging & Classification
+            {
+                id: "cat_1",
+                subject: "cataloging",
+                title: "RDA Toolkit: Resource Description and Access",
+                author: "ALA, CLA, and CILIP",
+                type: "Standard",
+                url: "https://www.rdatoolkit.org",
+                annotation: "An essential web-based standard providing instructions and guidelines for formulating resource description data. It represents the international successor to AACR2 tailored for the digital environment.",
+                year: "2024"
+            },
+            {
+                id: "cat_2",
+                subject: "cataloging",
+                title: "MARC 21 Format for Bibliographic Data",
+                author: "Library of Congress",
+                type: "Standard",
+                url: "https://www.loc.gov/marc/bibliographic/",
+                annotation: "The definitive authority documentation defining encoding standards for machine-readable bibliographic records. Essential for understanding tag structures, indicators, and subfield codes used in global library catalogs.",
+                year: "2023"
+            },
+            {
+                id: "cat_3",
+                subject: "cataloging",
+                title: "Introduction to Cataloging and Classification (11th Ed.)",
+                author: "Daniel N. Joudrey & Arlene G. Taylor",
+                type: "Book",
+                url: "https://www.bloomsbury.com",
+                annotation: "A foundational textbook offering comprehensive coverage of bibliographic control, metadata encoding, subject headings, DDC, LCC, and modern RDA application for LIS students.",
+                year: "2015"
+            },
+            {
+                id: "cat_4",
+                subject: "cataloging",
+                title: "Dewey Decimal Classification (DDC) Summaries",
+                author: "OCLC",
+                type: "Website",
+                url: "https://www.oclc.org/en/dewey.html",
+                annotation: "Provides an overview of the ten main classes, hundred divisions, and thousand sections of the DDC scheme. Crucial for learning structural hierarchical classification principles.",
+                year: "2024"
+            },
+            {
+                id: "cat_5",
+                subject: "cataloging",
+                title: "Library of Congress Classification Outline",
+                author: "Library of Congress",
+                type: "Website",
+                url: "https://www.loc.gov/catdir/cpso/lcco/",
+                annotation: "Official outline of the alphanumeric classification system used primarily in academic and research libraries worldwide. Key reference for subject-specific call number derivation.",
+                year: "2024"
+            },
+            {
+                id: "cat_6",
+                subject: "cataloging",
+                title: "LOC Program for Cooperative Cataloging (PCC) Training",
+                author: "Library of Congress Catalogers",
+                type: "Video",
+                url: "https://www.youtube.com/results?search_query=Library+of+Congress+PCC+training",
+                annotation: "Instructional video module series introducing practical RDA implementation, NACO authority control, and BIBFRAME linked data fundamentals for practitioners.",
+                year: "2022"
+            },
+            {
+                id: "cat_7",
+                subject: "cataloging",
+                title: "BIBFRAME: Bibliographic Framework Initiative",
+                author: "Library of Congress",
+                type: "Tool",
+                url: "https://www.loc.gov/bibframe/",
+                annotation: "An initiative replacing MARC formats with linked data principles to make library bibliographic data more discoverable on the semantic web.",
+                year: "2024"
+            },
+            {
+                id: "cat_8",
+                subject: "cataloging",
+                title: "Cataloging Correctly for Kids (6th Ed.)",
+                author: "American Library Association",
+                type: "Book",
+                url: "https://www.alastore.ala.org",
+                annotation: "Specialized guide presenting cataloging and classification practices tailored for juvenile collections, youth services, and school media centers.",
+                year: "2021"
+            },
+            {
+                id: "cat_9",
+                subject: "cataloging",
+                title: "Cataloging & Classification Quarterly",
+                author: "Taylor & Francis Group",
+                type: "Article",
+                url: "https://www.tandfonline.com/toc/wccq20/current",
+                annotation: "Peer-reviewed journal publishing research on technical services, metadata management, cataloger workflows, and classification system innovations.",
+                year: "2024"
+            },
+            {
+                id: "cat_10",
+                subject: "cataloging",
+                title: "Cataloging Lab: Open Community for Catalogers",
+                author: "Violet Fox et al.",
+                type: "Database",
+                url: "https://cataloginglab.org",
+                annotation: "Collaborative open platform designed to discuss, propose, and refine Library of Congress Subject Headings and classification revisions for inclusive cataloging.",
+                year: "2024"
+            },
+
+            // Subject 2: Reference & Information Services
+            {
+                id: "ref_1",
+                subject: "reference",
+                title: "Framework for Information Literacy for Higher Education",
+                author: "Association of College & Research Libraries (ACRL)",
+                type: "Standard",
+                url: "https://www.ala.org/acrl/standards/ilframework",
+                annotation: "A cluster of interconnected core concepts (e.g., Authority Is Constructed, Research as Inquiry) defining modern information literacy instruction in libraries.",
+                year: "2016"
+            },
+            {
+                id: "ref_2",
+                subject: "reference",
+                title: "Reference and Information Services: An Introduction (6th Ed.)",
+                author: "Melissa A. Wong & Laura Saunders",
+                type: "Book",
+                url: "https://www.abc-clio.com",
+                annotation: "Comprehensive reference textbook detailing the reference interview, electronic research tools, virtual reference management, and user instruction techniques.",
+                year: "2020"
+            },
+            {
+                id: "ref_3",
+                subject: "reference",
+                title: "Conducting the Reference Interview (3rd Ed.)",
+                author: "Catherine Sheldrick Ross, Kirsti Nilsen, & Marie L. Radford",
+                type: "Book",
+                url: "https://www.alastore.ala.org",
+                annotation: "Evidence-based practical guide focusing on effective communication strategies for conducting physical, chat, and video reference interactions with patrons.",
+                year: "2019"
+            },
+            {
+                id: "ref_4",
+                subject: "reference",
+                title: "RUSA Guidelines for Behavioral Performance of Reference Professionals",
+                author: "Reference and User Services Association (RUSA)",
+                type: "Standard",
+                url: "https://www.ala.org/rusa/resources/guidelines/guidelinesbehavioral",
+                annotation: "Professional standards outlining recommended patron engagement behavior, including approachability, active listening, searching methods, and follow-up.",
+                year: "2023"
+            },
+            {
+                id: "ref_5",
+                subject: "reference",
+                title: "LibAnswers & Springshare Virtual Reference Platform",
+                author: "Springshare",
+                type: "Tool",
+                url: "https://www.springshare.com/libanswers/",
+                annotation: "Industry-standard virtual reference software suite incorporating multi-channel chat, FAQ knowledgebases, ticketing systems, and statistical reference tracking.",
+                year: "2024"
+            },
+            {
+                id: "ref_6",
+                subject: "reference",
+                title: "The Reference Librarian Journal",
+                author: "Taylor & Francis",
+                type: "Article",
+                url: "https://www.tandfonline.com/toc/wref20/current",
+                annotation: "Peer-reviewed research journal highlighting empirical studies on digital reference, artificial intelligence in reference, and information consultation effectiveness.",
+                year: "2024"
+            },
+            {
+                id: "ref_7",
+                subject: "reference",
+                title: "NovelList Plus Reader's Advisory Database",
+                author: "EBSCO Information Services",
+                type: "Database",
+                url: "https://www.ebsco.com/products/novelist",
+                annotation: "Curated database facilitating book recommendations based on read-alikes, mood, genre, theme, and appeal factors for public and school librarians.",
+                year: "2024"
+            },
+            {
+                id: "ref_8",
+                subject: "reference",
+                title: "PROJECT INFORM: Master the Reference Interview",
+                author: "Syracuse University School of Information Studies",
+                type: "Video",
+                url: "https://www.youtube.com/results?search_query=Syracuse+Reference+Interview+training",
+                annotation: "Demonstrative video scenarios analyzing open vs. closed questioning techniques, active listening skills, and handling difficult reference inquiries.",
+                year: "2021"
+            },
+            {
+                id: "ref_9",
+                subject: "reference",
+                title: "Project CORA: Community of Online Research Assignments",
+                author: "Loyola Marymount University Library",
+                type: "Website",
+                url: "https://www.projectcora.org",
+                annotation: "Open-access educational resource offering a searchable database of user-contributed information literacy lesson plans, assignments, and rubrics.",
+                year: "2024"
+            },
+            {
+                id: "ref_10",
+                subject: "reference",
+                title: "Pew Research Center: Internet & Technology Reports",
+                author: "Pew Research Center",
+                type: "Database",
+                url: "https://www.pewresearch.org/topic/internet-technology/",
+                annotation: "Authoritative demographic research database offering analytical reports on public information-seeking habits, digital divides, and media literacy trends.",
+                year: "2024"
+            },
+
+            // Subject 3: Library Management & Administration
+            {
+                id: "man_1",
+                subject: "management",
+                title: "Library Licensing & Strategic Administration (5th Ed.)",
+                author: "Robert D. Stueart & Barbara B. Moran",
+                type: "Book",
+                url: "https://www.abc-clio.com",
+                annotation: "Classic management guide addressing leadership theories, organizational behavior, strategic planning, financial stewardship, and change management in LIS.",
+                year: "2018"
+            },
+            {
+                id: "man_2",
+                subject: "management",
+                title: "ALA Advocacy Toolkit & Legislative Action",
+                author: "American Library Association",
+                type: "Website",
+                url: "https://www.ala.org/advocacy/",
+                annotation: "Practical toolkits, policy briefs, and communication strategies designed to empower library administrators in securing funding and policy support.",
+                year: "2024"
+            },
+            {
+                id: "man_3",
+                subject: "management",
+                title: "Journal of Library Administration",
+                author: "Taylor & Francis",
+                type: "Article",
+                url: "https://www.tandfonline.com/toc/wjla20/current",
+                annotation: "Leading scholarly journal examining leadership challenges, personnel management, crisis planning, facilities re-design, and budget management.",
+                year: "2024"
+            },
+            {
+                id: "man_4",
+                subject: "management",
+                title: "Financial Management for Libraries",
+                author: "Stephen A. Roberts",
+                type: "Book",
+                url: "https://www.facetpublishing.co.uk",
+                annotation: "Detailed guide on accounting principles, line-item and program budgeting, cost-benefit analysis, and resource allocation in non-profit information centers.",
+                year: "2020"
+            },
+            {
+                id: "man_5",
+                subject: "management",
+                title: "IFLA Library Management & Marketing Section Resources",
+                author: "International Federation of Library Associations (IFLA)",
+                type: "Website",
+                url: "https://www.ifla.org/units/management-and-marketing/",
+                annotation: "Global guidelines and case studies showcasing strategic management models, promotional campaigns, and service quality evaluations across international contexts.",
+                year: "2024"
+            },
+            {
+                id: "man_6",
+                subject: "management",
+                title: "LLAMA Leadership & Management Webinars",
+                author: "Core: Leadership, Infrastructure, Futures (ALA)",
+                type: "Video",
+                url: "https://www.youtube.com/results?search_query=ALA+Core+leadership+management+library",
+                annotation: "Webinar series covering strategic plan development, staff performance reviews, conflict resolution, and equity-focused hiring in library environments.",
+                year: "2023"
+            },
+            {
+                id: "man_7",
+                subject: "management",
+                title: "Library Space Planning Guide",
+                author: "State Library of Ohio / Massachusetts Board of Library Commissioners",
+                type: "Tool",
+                url: "https://mblc.state.ma.us/cost-calculator/",
+                annotation: "Interactive tools and guidelines for estimating physical space requirements, ADA accessibility compliance, and flexible learning commons configurations.",
+                year: "2022"
+            },
+            {
+                id: "man_8",
+                subject: "management",
+                title: "Library Safety and Security: A Practical Guide",
+                author: "Dennis K. Brennan",
+                type: "Book",
+                url: "https://www.alastore.ala.org",
+                annotation: "Essential manual for developing emergency preparedness plans, patron conduct policies, staff safety training, and crisis response procedures.",
+                year: "2021"
+            },
+            {
+                id: "man_9",
+                subject: "management",
+                title: "Library Assessment Toolkit",
+                author: "Association of Research Libraries (ARL)",
+                type: "Standard",
+                url: "https://www.arl.org/category/topics/assessment/",
+                annotation: "Assessment metrics, survey instruments (e.g., LibQUAL+), and outcome evaluation framework models to demonstrate institutional library impact.",
+                year: "2024"
+            },
+            {
+                id: "man_10",
+                subject: "management",
+                title: "Public Library Association (PLA) Metrics & Benchmarking",
+                author: "PLA / ALA",
+                type: "Database",
+                url: "https://www.benchmark.ala.org",
+                annotation: "Data tool providing comparative statistical reports on library staffing, operating budgets, program attendance, and square footage benchmark standards.",
+                year: "2024"
+            },
+
+            // Subject 4: Collection Development & Management
+            {
+                id: "col_1",
+                subject: "collection",
+                title: "Developing Library and Information Center Collections (7th Ed.)",
+                author: "G. Edward Evans & Margaret Zarnosky Saponaro",
+                type: "Book",
+                url: "https://www.librariesunlimited.com",
+                annotation: "Definitive textbook explaining collection policy creation, community needs assessment, selection criteria, electronic licensing, and weeding models.",
+                year: "2019"
+            },
+            {
+                id: "col_2",
+                subject: "collection",
+                title: "ALA Selection & Reconsideration Policy Toolkit",
+                author: "ALA Office for Intellectual Freedom",
+                type: "Standard",
+                url: "https://www.ala.org/tools/challengesupport/selectionpolicytoolkit",
+                annotation: "Guidance for creating robust collection development policies and managing formal book challenge reconsiderations based on the Library Bill of Rights.",
+                year: "2023"
+            },
+            {
+                id: "col_3",
+                subject: "collection",
+                title: "CREW: A Weeding Manual for Modern Libraries",
+                author: "Jeanette Larson / Texas State Library",
+                type: "Standard",
+                url: "https://www.tsl.texas.gov/ld/pubs/crew/index.html",
+                annotation: "The MUSTIE methodology standards manual providing detailed lifespan guidelines and formulas for systematically deselecting print materials across DDC classes.",
+                year: "2020"
+            },
+            {
+                id: "col_4",
+                subject: "collection",
+                title: "Collection Management Journal",
+                author: "Taylor & Francis",
+                type: "Article",
+                url: "https://www.tandfonline.com/toc/wcol20/current",
+                annotation: "Peer-reviewed research investigating electronic resource management (ERM), big deal journal unbundling, demand-driven acquisition (DDA), and preservation.",
+                year: "2024"
+            },
+            {
+                id: "col_5",
+                subject: "collection",
+                title: "LIBLICENSE: Licensing Digital Content for Libraries",
+                author: "Center for Research Libraries (CRL)",
+                type: "Website",
+                url: "http://liblicense.crl.edu",
+                annotation: "Resource portal providing model license agreements, commentary on copyright law, fair use, open access mandates, and vendor negotiation tips.",
+                year: "2024"
+            },
+            {
+                id: "col_6",
+                subject: "collection",
+                title: "Guide to E-Book Licensing Models for Public Libraries",
+                author: "Urban Libraries Council",
+                type: "Video",
+                url: "https://www.youtube.com/results?search_query=Ebook+licensing+models+libraries+ULC",
+                annotation: "Video presentation breaking down metered access, simultaneous user licenses, and perpetual license pricing structures enforced by publishers.",
+                year: "2022"
+            },
+            {
+                id: "col_7",
+                subject: "collection",
+                title: "OverDrive & Libby Digital Collection Platform",
+                author: "OverDrive Inc.",
+                type: "Tool",
+                url: "https://company.overdrive.com",
+                annotation: "Leading digital distribution platform for managing e-book, audiobook, and digital magazine lending workflows in libraries.",
+                year: "2024"
+            },
+            {
+                id: "col_8",
+                subject: "collection",
+                title: "Choice Reviews: Academic Collection Selection",
+                author: "ACRL / ALA",
+                type: "Database",
+                url: "https://www.choice360.org",
+                annotation: "Premier review database evaluating academic books and digital resources to assist university collection development librarians in selection decisions.",
+                year: "2024"
+            },
+            {
+                id: "col_9",
+                subject: "collection",
+                title: "Preservation and Conservation (PAC) Guidelines",
+                author: "International Federation of Library Associations (IFLA)",
+                type: "Standard",
+                url: "https://www.ifla.org/units/pac/",
+                annotation: "International recommendations for disaster recovery planning, environmental controls, digital preservation strategies, and physical binding care.",
+                year: "2023"
+            },
+            {
+                id: "col_10",
+                subject: "collection",
+                title: "Against the Grain: Issues in Publishing & Acquisitions",
+                author: "Charleston Hub",
+                type: "Article",
+                url: "https://www.charleston-hub.com/media/atg/",
+                annotation: "Industry news publication focusing on vendor relationships, book and serial acquisitions, scholarly communication models, and library publishing trends.",
+                year: "2024"
+            },
+
+            // Subject 5: ICT in Libraries
+            {
+                id: "ict_1",
+                subject: "ict",
+                title: "Koha Open Source Integrated Library System (ILS)",
+                author: "Koha Community",
+                type: "Tool",
+                url: "https://koha-community.org",
+                annotation: "Full-featured open-source ILS platform used worldwide, providing circulation, cataloging, acquisition, serials, and OPAC web interfaces.",
+                year: "2024"
+            },
+            {
+                id: "ict_2",
+                subject: "ict",
+                title: "DSpace Digital Repository Software Platform",
+                author: "LYRASIS & DSpace Community",
+                type: "Tool",
+                url: "https://dspace.lyrasis.org",
+                annotation: "Turnkey open-source repository application designed to capture, store, index, and preserve institutional research papers, theses, and digital assets.",
+                year: "2024"
+            },
+            {
+                id: "ict_3",
+                subject: "ict",
+                title: "Information Technology and Libraries (ITAL) Journal",
+                author: "Core (ALA)",
+                type: "Article",
+                url: "https://ejournals.bc.edu/index.php/ital",
+                annotation: "Open-access peer-reviewed research journal investigating AI application, library web usability, discovery layers, RFID, and digital preservation technologies.",
+                year: "2024"
+            },
+            {
+                id: "ict_4",
+                subject: "ict",
+                title: "Artificial Intelligence in Libraries (ALA Technical Report)",
+                author: "American Library Association",
+                type: "Standard",
+                url: "https://www.ala.org/tools/future/trends/artificialintelligence",
+                annotation: "Trend analysis report examining Generative AI, natural language search capabilities, automated metadata tagging, and ethics in library systems.",
+                year: "2024"
+            },
+            {
+                id: "ict_5",
+                subject: "ict",
+                title: "Library Systems Report (Annual Assessment)",
+                author: "Marshall Breeding / American Libraries",
+                type: "Article",
+                url: "https://librarytechnology.org/librarysystems/",
+                annotation: "Industry report analyzing market share trends, mergers, and technical capabilities of global library automation vendors and platforms.",
+                year: "2024"
+            },
+            {
+                id: "ict_6",
+                subject: "ict",
+                title: "Library Technology Guides & LibTechDB",
+                author: "Marshall Breeding",
+                type: "Database",
+                url: "https://librarytechnology.org",
+                annotation: "A comprehensive repository tracking global library automation software, vendor profiles, repository usage, and technological infrastructure trends.",
+                year: "2024"
+            },
+            {
+                id: "ict_7",
+                subject: "ict",
+                title: "Introduction to Library Discovery Systems",
+                author: "Ex Libris / Clarivate",
+                type: "Video",
+                url: "https://www.youtube.com/results?search_query=Library+Discovery+Services+Primo+Summon",
+                annotation: "Overview video demonstrating single-search discovery engines (e.g., Primo, EBSCO Discovery Service) connecting library catalogs with electronic journal indices.",
+                year: "2023"
+            },
+            {
+                id: "ict_8",
+                subject: "ict",
+                title: "Web Content Accessibility Guidelines (WCAG) 2.2",
+                author: "W3C Web Accessibility Initiative",
+                type: "Standard",
+                url: "https://www.w3.org/TR/WCAG22/",
+                annotation: "International technical standards required for ensuring library websites, digital databases, and screen readers are accessible to patrons with disabilities.",
+                year: "2023"
+            },
+            {
+                id: "ict_9",
+                subject: "ict",
+                title: "Practical Technology for Modern Librarians",
+                author: "Frederic Stielow",
+                type: "Book",
+                url: "https://www.rowman.com",
+                annotation: "Hands-on guide covering cloud computing, database architecture, cybersecurity, network protocols, and web server setup tailored for information managers.",
+                year: "2020"
+            },
+            {
+                id: "ict_10",
+                subject: "ict",
+                title: "Code4Lib Journal & Community",
+                author: "Code4Lib Volunteer Community",
+                type: "Website",
+                url: "https://journal.code4lib.org",
+                annotation: "Open peer-reviewed journal created by library programmers showcasing custom script writing, API integration, data scraping, and web application design.",
+                year: "2024"
+            },
+
+            // Subject 6: Abstracting & Indexing
+            {
+                id: "abs_1",
+                subject: "abstracting",
+                title: "ISO 25964: Thesauri and Interoperability with Other Vocabularies",
+                author: "International Organization for Standardization (ISO)",
+                type: "Standard",
+                url: "https://www.iso.org/standard/53416.html",
+                annotation: "The definitive international standard establishing rules for thesaurus development, controlled vocabulary construction, preferred terms, and semantic relationships.",
+                year: "2021"
+            },
+            {
+                id: "abs_2",
+                subject: "abstracting",
+                title: "Dublin Core Metadata Element Set (DCMI Version 1.1)",
+                author: "Dublin Core Metadata Initiative",
+                type: "Standard",
+                url: "https://www.dublincore.org/specifications/dublin-core/dces/",
+                annotation: "Specification describing the 15 core metadata elements (e.g., Title, Creator, Subject, Identifier) used for standardized digital resource indexing across systems.",
+                year: "2023"
+            },
+            {
+                id: "abs_3",
+                subject: "abstracting",
+                title: "Indexing and Abstracting in Theory and Practice (4th Ed.)",
+                author: "F. W. Lancaster",
+                type: "Book",
+                url: "https://www.facetpublishing.co.uk",
+                annotation: "Seminal textbook examining indexing principles, exhaustive versus specific indexing, controlled versus natural language indexing, and writing informative abstracts.",
+                year: "2012"
+            },
+            {
+                id: "abs_4",
+                subject: "abstracting",
+                title: "ANSI/NISO Z39.14: Guidelines for Abstracts",
+                author: "National Information Standards Organization (NISO)",
+                type: "Standard",
+                url: "https://www.niso.org/publications/ansiniso-z3914-1997-r2015",
+                annotation: "National standard outlining rules for writing clear informative and indicative abstracts for scholarly articles, technical reports, and monographs.",
+                year: "2015"
+            },
+            {
+                id: "abs_5",
+                subject: "abstracting",
+                title: "Medical Subject Headings (MeSH) Thesaurus Browser",
+                author: "U.S. National Library of Medicine",
+                type: "Database",
+                url: "https://meshb.nlm.nih.gov/search",
+                annotation: "A premier example of a controlled vocabulary hierarchical thesaurus used for indexing, cataloging, and querying biomedical literature in PubMed.",
+                year: "2024"
+            },
+            {
+                id: "abs_6",
+                subject: "abstracting",
+                title: "The Art of Indexing & Controlled Vocabulary Construction",
+                author: "American Society for Indexing (ASI)",
+                type: "Video",
+                url: "https://www.youtube.com/results?search_query=American+Society+for+Indexing+training",
+                annotation: "Practical video lecture detailing entry selection, cross-reference (See / See Also) formulation, sub-heading inversion, and back-of-the-book indexing.",
+                year: "2022"
+            },
+            {
+                id: "abs_7",
+                subject: "abstracting",
+                title: "UNESCO Thesaurus Online",
+                author: "UNESCO",
+                type: "Tool",
+                url: "http://vocabularies.unesco.org/browser/thesaurus/en/",
+                annotation: "Multilingual controlled vocabulary tool covering education, science, culture, social science, and communication for indexing international documentation.",
+                year: "2024"
+            },
+            {
+                id: "abs_8",
+                subject: "abstracting",
+                title: "The Key to Abstracting: Writing Informative Summaries",
+                author: "Harold Borko & Charles L. Bernier",
+                type: "Book",
+                url: "https://www.academicpress.com",
+                annotation: "Technical guide outlining procedures for editing, sentence structuring, and automated sentence extraction for journal indexing services.",
+                year: "2018"
+            },
+            {
+                id: "abs_9",
+                subject: "abstracting",
+                title: "The Indexer: The International Journal of Indexing",
+                author: "Society of Indexers / Liverpool University Press",
+                type: "Article",
+                url: "https://online.liverpooluniversitypress.co.uk/loi/index",
+                annotation: "Peer-reviewed journal publishing research on automated indexing algorithms, ebook indexing, taxonomy management software, and metadata standards.",
+                year: "2024"
+            },
+            {
+                id: "abs_10",
+                subject: "abstracting",
+                title: "PoolParty Taxonomy & Thesaurus Management Suite",
+                author: "Semantic Web Company",
+                type: "Tool",
+                url: "https://www.poolparty.biz",
+                annotation: "Industry software standard for building semantic thesauri, SKOS-compliant taxonomies, and knowledge graphs for enterprise content indexing.",
+                year: "2024"
+            }
+        ];
+
+        // State Management
+        let currentSubject = 'ALL';
+        let currentSearchQuery = '';
+        let currentTypeFilter = 'ALL';
+        let savedResources = JSON.parse(localStorage.getItem('lis_saved_pathfinder') || '[]');
+
+        // Initialize UI
+        function initApp() {
+            renderSubjectOverview();
+            renderResources();
+            updateSavedCount();
+            renderSavedList();
+        }
+
+        // Subject Tab Selection
+        function selectSubject(subjectKey, tabBtn) {
+            currentSubject = subjectKey;
+            
+            // Update active styling
+            document.querySelectorAll('.subject-tab').forEach(btn => {
+                btn.classList.remove('subject-tab-active');
+                btn.classList.remove('bg-brand-600', 'text-white', 'shadow-sm');
+                btn.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300');
+            });
+            tabBtn.classList.add('subject-tab-active');
+            tabBtn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300');
+            tabBtn.classList.add('bg-brand-600', 'text-white', 'shadow-sm');
+
+            renderSubjectOverview();
+            renderResources();
+        }
+
+        // Render Overview Card
+        function renderSubjectOverview() {
+            const overview = subjectOverviews[currentSubject];
+            const overviewBox = document.getElementById('subjectOverviewBox');
+            
+            let keyTermsHTML = overview.keyTerms.map(term => `<span class="key-term px-2.5 py-1 rounded-md bg-brand-50 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800 text-[11px] font-mono">${term}</span>`).join(' ');
+
+            overviewBox.innerHTML = `
+                <div class="space-y-3">
+                    <span class="overview-kicker text-[10px] font-bold uppercase tracking-widest block"><i class="fa-solid fa-arrow-turn-down mr-1"></i> A quick field note</span>
+                    <h3 class="overview-title text-xl font-bold">${overview.title}</h3>
+                    <p class="overview-description text-xs sm:text-sm leading-relaxed">${overview.desc}</p>
+                    <div class="pt-2 flex flex-wrap items-center gap-1.5">
+                        <span class="text-xs font-semibold text-slate-500 mr-2">Key concepts</span>
+                        ${keyTermsHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Filter Logic
+        function handleFilterChange() {
+            currentSearchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            currentTypeFilter = document.getElementById('typeFilter').value;
+            renderResources();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('typeFilter').value = 'ALL';
+            currentSearchQuery = '';
+            currentTypeFilter = 'ALL';
+            renderResources();
+        }
+
+        // Render Resource Cards
+        function renderResources() {
+            const grid = document.getElementById('resourcesGrid');
+            const titleEl = document.getElementById('activeSectionTitle');
+            const countEl = document.getElementById('resourceCountText');
+
+            // Filter logic
+            const filtered = lisResources.filter(item => {
+                const matchesSubject = (currentSubject === 'ALL') || (item.subject === currentSubject);
+                const matchesType = (currentTypeFilter === 'ALL') || (item.type === currentTypeFilter);
+                const matchesSearch = !currentSearchQuery || 
+                    item.title.toLowerCase().includes(currentSearchQuery) ||
+                    item.author.toLowerCase().includes(currentSearchQuery) ||
+                    item.annotation.toLowerCase().includes(currentSearchQuery) ||
+                    item.type.toLowerCase().includes(currentSearchQuery);
+
+                return matchesSubject && matchesType && matchesSearch;
+            });
+
+            titleEl.innerText = currentSubject === 'ALL' ? 'All Curated Resources' : subjectOverviews[currentSubject].title;
+            countEl.innerText = `Showing ${filtered.length} annotated ${filtered.length === 1 ? 'resource' : 'resources'}`;
+
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center space-y-3 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+                        <i class="fa-solid fa-folder-open text-3xl text-slate-400"></i>
+                        <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">No resources found matching your search or filters.</p>
+                        <button onclick="resetFilters()" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-bold">Reset Filters</button>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const isSaved = savedResources.some(s => s.id === item.id);
+                
+                // Format badge colors
+                let badgeColor = "bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700";
+                if(item.type === 'Book') badgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800";
+                if(item.type === 'Article') badgeColor = "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800";
+                if(item.type === 'Standard') badgeColor = "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800";
+                if(item.type === 'Video') badgeColor = "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800";
+                if(item.type === 'Database') badgeColor = "bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/60 dark:text-teal-300 dark:border-teal-800";
+                if(item.type === 'Tool') badgeColor = "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800";
+
+                const card = document.createElement('div');
+                card.className = 'resource-card bg-white dark:bg-slate-800/90 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/70 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative space-y-4';
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${badgeColor}">
+                                ${item.type}
+                            </span>
+                            <span class="text-xs text-slate-400 font-mono">${item.year}</span>
+                        </div>
+
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white leading-snug hover:text-brand-600 transition-colors">
+                            <a href="${item.url}" target="_blank" rel="noopener noreferrer">
+                                ${item.title} <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 ml-1"></i>
+                            </a>
+                        </h3>
+
+                        <p class="resource-author text-xs font-semibold text-brand-700 dark:text-brand-300">
+                            <i class="fa-solid fa-user-pen mr-1"></i> ${item.author}
+                        </p>
+
+                        <div class="resource-annotation bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800/80">
+                            <p class="text-xs leading-relaxed font-normal">
+                                <span class="font-semibold">A note:</span> ${item.annotation}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="resource-footer flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/60 gap-2">
+                        <button onclick="openCitationModal('${item.id}')" class="citation-button px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-medium flex items-center space-x-1.5">
+                            <i class="fa-solid fa-quote-left text-[11px]"></i>
+                            <span>Citation</span>
+                        </button>
+
+                        <button onclick="toggleSaveResource('${item.id}')" class="save-button ${isSaved ? 'is-saved bg-teal-600 text-white' : 'bg-brand-50 dark:bg-brand-950/50 text-brand-700 dark:text-brand-300 hover:bg-brand-600 hover:text-white'} text-xs font-bold transition-colors flex items-center space-x-1.5">
+                            <i class="fa-solid ${isSaved ? 'fa-check' : 'fa-bookmark'}"></i>
+                            <span>${isSaved ? 'Saved' : 'Save Resource'}</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Bookmark & Saved Resources Handler
+        function toggleSaveResource(id) {
+            const index = savedResources.findIndex(r => r.id === id);
+            if (index > -1) {
+                savedResources.splice(index, 1);
+                showToast("Resource removed from saved pathfinder.");
+            } else {
+                const item = lisResources.find(r => r.id === id);
+                savedResources.push(item);
+                showToast("Resource added to your saved pathfinder!");
+            }
+            localStorage.setItem('lis_saved_pathfinder', JSON.stringify(savedResources));
+            updateSavedCount();
+            renderResources();
+            renderSavedList();
+        }
+
+        function updateSavedCount() {
+            document.getElementById('savedCountBadge').innerText = savedResources.length;
+        }
+
+        function toggleSavedDrawer() {
+            const drawer = document.getElementById('savedDrawer');
+            drawer.classList.toggle('translate-x-full');
+        }
+
+        function renderSavedList() {
+            const container = document.getElementById('savedListContainer');
+            container.innerHTML = '';
+
+            if (savedResources.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400">No resources saved yet. Click "Save Resource" on any card to add it to your pathfinder!</div>`;
+                return;
+            }
+
+            savedResources.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'p-3 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 relative';
+                div.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400">${item.type}</span>
+                        <button onclick="toggleSaveResource('${item.id}')" class="text-slate-400 hover:text-red-500">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                    <h4 class="font-bold text-slate-900 dark:text-white leading-tight">${item.title}</h4>
+                    <p class="text-[11px] text-slate-500">${item.author} (${item.year})</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function copySavedPathfinderText() {
+            if (savedResources.length === 0) {
+                showToast("No saved items to copy!");
+                return;
+            }
+
+            let text = "=== MY CURATED LIS PATHFINDER ===\n\n";
+            savedResources.forEach((item, index) => {
+                text += `${index + 1}. ${item.title}\n`;
+                text += `Author/Publisher: ${item.author} (${item.year})\n`;
+                text += `Format: ${item.type}\n`;
+                text += `URL: ${item.url}\n`;
+                text += `Annotation: ${item.annotation}\n\n`;
+            });
+
+            copyToClipboard(text);
+            showToast("Custom Pathfinder copied to clipboard!");
+        }
+
+        function clearSavedResources() {
+            savedResources = [];
+            localStorage.setItem('lis_saved_pathfinder', JSON.stringify([]));
+            updateSavedCount();
+            renderResources();
+            renderSavedList();
+            showToast("Saved resources cleared.");
+        }
+
+        // Citation Modal Handler
+        let activeCitationItem = null;
+        let activeMemberCard = null;
+
+        function openMemberModal(card) {
+            activeMemberCard = card;
+            const image = card.querySelector('.members-photo');
+            const name = card.querySelector('h3').innerText.trim();
+            const position = card.querySelector('.members-kicker').innerText.trim();
+
+            document.getElementById('memberModalPhoto').src = image.src;
+            document.getElementById('memberModalPhoto').alt = image.alt;
+            document.getElementById('memberModalName').innerText = name;
+            document.getElementById('memberModalPosition').innerText = position;
+            document.getElementById('memberModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('closeMemberModalButton').focus();
+        }
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !document.getElementById('memberModal').classList.contains('hidden')) {
+                closeModal('memberModal');
+            }
+        });
+
+        function openCitationModal(id) {
+            const item = lisResources.find(r => r.id === id);
+            activeCitationItem = item;
+
+            document.getElementById('modalResourceTitle').innerText = item.title;
+            
+            // Format APA Citation
+            const apa = `${item.author}. (${item.year}). ${item.title}. [${item.type}]. Available online: ${item.url}`;
+            document.getElementById('apaCitationText').innerText = apa;
+            document.getElementById('annotationSnippetText').innerText = item.annotation;
+
+            document.getElementById('citationModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            if (modalId === 'memberModal') {
+                document.body.style.overflow = '';
+                if (activeMemberCard) activeMemberCard.focus();
+                activeMemberCard = null;
+            }
+        }
+
+        function copyCitationSnippet() {
+            if (!activeCitationItem) return;
+            const fullSnippet = `CITATION (APA 7th):\n${document.getElementById('apaCitationText').innerText}\n\nEVALUATIVE ANNOTATION:\n${activeCitationItem.annotation}`;
+            copyToClipboard(fullSnippet);
+            showToast("Citation and annotation copied to clipboard!");
+            closeModal('citationModal');
+        }
+
+        // Clipboard Helper
+        function copyToClipboard(str) {
+            const el = document.createElement('textarea');
+            el.value = str;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        }
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Theme Toggle Logic
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Initialize App on DOM ready
+        window.onload = function() {
+            initApp();
+        };
+    </script>
+</body>
+</html>
